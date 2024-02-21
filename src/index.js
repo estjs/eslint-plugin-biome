@@ -57,46 +57,46 @@ const eslintPluginBiome = {
 					},
 				],
 			},
-			async create(context) {
+			 create(context) {
 				const useCustomConfig = context.options?.[0] || {}
 				const sourceCode = context.sourceCode ?? context.getSourceCode();
 				const filePath = context.filename ?? context.getFilename();
 				const onDiskFilepath = context.physicalFilename ?? context.getPhysicalFilename();
 				const source = sourceCode.text;
-				if (!biome) {
-					biome = await Biome.create();
-					biome.applyConfiguration({ ...BiomeConfig, ...useCustomConfig });
-				}
+	
 				return {
-					Program() {
-							let content;
-							try {
-								const formatted = biome.formatContent(source, {
-									filePath,
-									onDiskFilepath,
-								});
-								content = formatted.content;
-							} catch (error_) {
-								if (!(error_ instanceof SyntaxError)) {
-									throw error_;
-								}
-								const message = `Parsing error: ${error_.message}`;
-								const error = /** @type {SyntaxError & {codeFrame: string; loc: SourceLocation}} */ (error_);
-								context.report({ message, loc: error });
-								return;
+					async Program() {
+						if (!biome) {
+							biome = await Biome.create();
+							biome.applyConfiguration({...BiomeConfig,...useCustomConfig});
+						}
+						let content;
+						try {
+							const fromated = biome.formatContent(source, {
+								...fileInfoOptions,
+								filePath,
+								onDiskFilepath,
+							});
+							content = fromated.content;
+						} catch (err) {
+							if (!(err instanceof SyntaxError)) {
+								throw err;
 							}
-
-							if (!content) {
-								return;
+							const message = 'Parsing error: ' + err.message;
+							const error = /** @type {SyntaxError & {codeFrame: string; loc: SourceLocation}} */ (err);
+							context.report({ message, loc: error });
+							return;
+						}
+						if (content == null) {
+							return;
+						}
+						if (source !== content) {
+							const differences = generateDifferences(source, content);
+							for (const difference of differences) {
+								reportDifference(context, difference);
 							}
-							if (source !== content) {
-								const differences = generateDifferences(source, content);
-								for (const difference of differences) {
-									reportDifference(context, difference);
-								}
-							}
+						}
 					},
-
 				};
 			},
 		},
