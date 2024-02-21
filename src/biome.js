@@ -43,8 +43,8 @@ export default class Biome {
         configuration,
         gitignore_matches: [],
       });
-    } catch (e) {
-      throw wrapError(e);
+    } catch (error) {
+      throw wrapError(error);
     }
   }
 
@@ -65,8 +65,8 @@ export default class Biome {
           path: biomePath,
         });
       }
-    } catch (err) {
-      throw wrapError(err);
+    } catch (error) {
+      throw wrapError(error);
     }
   }
 
@@ -151,15 +151,15 @@ export default class Biome {
             printer.print_simple(diag);
           }
         }
-      } catch (err) {
+      } catch (error) {
         // Only call `free` if the `print` method throws, `finish` will
         // take care of deallocating the printer even if it fails
         printer.free();
-        throw err;
+        throw error;
       }
       return printer.finish();
-    } catch (err) {
-      throw wrapError(err);
+    } catch (error) {
+      throw wrapError(error);
     }
   }
 }

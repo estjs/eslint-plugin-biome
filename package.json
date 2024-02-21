@@ -36,7 +36,7 @@
 	"scripts": {
 		"dev": "node ./src/index.js",
 		"build": "unbuild",
-		"lint": "eslint ./src",
+		"lint": "eslint ./src --fix",
 		"test": "vitest",
 		"test:watch": "vitest --watch",
 		"release": "pnpm run build && bumpp package.json  --no-git-checks --commit --push --tag && pnpm publish --access public"
@@ -47,6 +47,7 @@
 		"synckit": "^0.9.0"
 	},
 	"devDependencies": {
+		"@estjs/eslint-config": "1.0.3",
 		"bumpp": "^9.1.0",
 		"eslint": "^8.56.0",
 		"tsx": "^4.7.0",

@@ -1,42 +1,45 @@
 import BiomeConfig from '../biome.json';
+import { name, version } from '../package.json';
 import Biome from './biome';
 import { generateDifferences, showInvisibles } from './helpers';
 
-import {name,version} from "../package.json"
 const { INSERT, DELETE, REPLACE } = generateDifferences;
+/**
+ * Reports a difference.
+ *
+ * @param {import('eslint').Rule.RuleContext} context - The ESLint rule context.
+ * @param {import('prettier-linter-helpers').Difference} difference - The difference object.
+ * @returns {void}
+ */
 function reportDifference(context, difference) {
-  const { operation, offset, deleteText = '', insertText = '' } = difference;
-  const range = /** @type {Range} */ ([offset, offset + deleteText.length]);
-  // `context.getSourceCode()` was deprecated in ESLint v8.40.0 and replaced
-  // with the `sourceCode` property.
-  // TODO: Only use property when our eslint peerDependency is >=8.40.0.
-  const [start, end] = range.map(index =>
-    (context.sourceCode ?? context.getSourceCode()).getLocFromIndex(index),
-  );
-  context.report({
-    messageId: operation,
-    data: {
-      deleteText: showInvisibles(deleteText),
-      insertText: showInvisibles(insertText),
-    },
-    loc: { start, end },
-    fix: fixer => fixer.replaceTextRange(range, insertText),
-  });
+	const { operation, offset, deleteText = '', insertText = '' } = difference;
+	const range = [offset, offset + deleteText.length];
+
+	const [start, end] = range.map(index => context.sourceCode.getLocFromIndex(index));
+	context.report({
+		messageId: operation,
+		data: {
+			deleteText: showInvisibles(deleteText),
+			insertText: showInvisibles(insertText),
+		},
+		loc: { start, end },
+		fix: fixer => fixer.replaceTextRange(range, insertText),
+	});
 }
 let biome;
 
 const eslintPluginBiome = {
-  meta: { name, version },
-  configs: {
-    recommended: {
+	meta: { name, version },
+	configs: {
+		recommended: {
 			plugins: ['biome'],
-      rules: {
-        'biome/biome': 'warn',
-      },
-    },
-  },
-  rules: {
-  	biome: {
+			rules: {
+				'biome/biome': 'warn',
+			},
+		},
+	},
+	rules: {
+		biome: {
 			meta: {
 				type: 'layout',
 				fixable: 'code',
@@ -49,9 +52,17 @@ const eslintPluginBiome = {
 					[DELETE]: 'Delete `{{ deleteText }}`',
 					[REPLACE]: 'Replace `{{ deleteText }}` with `{{ insertText }}`',
 				},
-				schema: [],
+				schema: [
+					{
+						type: 'object',
+						properties: {},
+						additionalProperties: true,
+					},
+				],
 			},
 			create(context) {
+				//TODO:
+				const useCustomConfig = !context.options[1] || context.options[1].useCustomConfig !== false;
 				const fileInfoOptions = (context.options[1] && context.options[1].fileInfoOptions) || {};
 				const sourceCode = context.sourceCode ?? context.getSourceCode();
 				const filePath = context.filename ?? context.getFilename();
@@ -65,18 +76,20 @@ const eslintPluginBiome = {
 						}
 						let content;
 						try {
-							const fromated = biome.formatContent(source, {
+							const formatted = biome.formatContent(source, {
 								...fileInfoOptions,
 								filePath,
 								onDiskFilepath,
 							});
-							content = fromated.content;
-						} catch (err) {
-							if (!(err instanceof SyntaxError)) {
-								throw err;
+							content = formatted.content;
+						} catch (error_) {
+							if (!(error_ instanceof SyntaxError)) {
+								throw error_;
 							}
-							const message = 'Parsing error: ' + err.message;
-							const error = /** @type {SyntaxError & {codeFrame: string; loc: SourceLocation}} */ (err);
+							const message = `Parsing error: ${error_.message}`;
+							const error = /** @type {SyntaxError & {codeFrame: string; loc: SourceLocation}} */ (
+								error_
+							);
 							context.report({ message, loc: error });
 							return;
 						}
@@ -92,7 +105,7 @@ const eslintPluginBiome = {
 					},
 				};
 			},
-		}
-  },
+		},
+	},
 };
 export default eslintPluginBiome;

@@ -1,27 +1,27 @@
 export async function loadModule() {
-  const modulePromise = import('@biomejs/wasm-nodejs');
-  const module = await modulePromise;
-  module.main();
-  return module;
+	const modulePromise = import('@biomejs/wasm-nodejs');
+	const module = await modulePromise;
+	module.main();
+	return module;
 }
 /**
  * The error generated when communicating with WebAssembly
  */
 class WasmError extends Error {
-  /**
-   * The stack trace of the error.
-   *
-   * It might be useful, but the first like of the stack trace contains the error
-   */
-  stackTrace;
-  constructor(stackTrace) {
-    super();
-    this.stackTrace = stackTrace;
-  }
+	/**
+	 * The stack trace of the error.
+	 *
+	 * It might be useful, but the first like of the stack trace contains the error
+	 */
+	stackTrace;
+	constructor(stackTrace) {
+		super();
+		this.stackTrace = stackTrace;
+	}
 
-  static fromError(e) {
-    return new WasmError(e);
-  }
+	static fromError(e) {
+		return new WasmError(e);
+	}
 }
 /**
  * Creates wrap a WebAssembly error into a native JS Error
@@ -29,5 +29,5 @@ class WasmError extends Error {
  * @param e
  */
 export function wrapError(e) {
-  return WasmError.fromError(e);
+	return WasmError.fromError(e);
 }

@@ -1,0 +1,9 @@
+{
+  "search.exclude": {
+    "dist/**/*": true,
+    "mock/**/*": true,
+    "node_modules/**/*": true
+  },
+  "eslint.experimental.useFlatConfig": true,
+  "svg.preview.autoOpen": true
+}

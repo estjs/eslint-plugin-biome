@@ -1,6 +1,6 @@
 import diff from 'fast-diff';
 
-const LINE_ENDING_RE = /\r\n|[\r\n\u2028\u2029]/;
+const LINE_ENDING_RE = /\r\n|[\n\r\u2028\u2029]/;
 
 /**
  * Converts invisible characters to a commonly recognizable visible form.
@@ -9,8 +9,8 @@ const LINE_ENDING_RE = /\r\n|[\r\n\u2028\u2029]/;
  */
 export function showInvisibles(str) {
   let ret = '';
-  for (let i = 0; i < str.length; i++) {
-    switch (str[i]) {
+  for (const element of str) {
+    switch (element) {
       case ' ':
         ret += '·'; // Middle Dot, \u00B7
         break;
@@ -24,7 +24,7 @@ export function showInvisibles(str) {
         ret += '␍'; // Carriage Return Symbol, \u240D
         break;
       default:
-        ret += str[i];
+        ret += element;
         break;
     }
   }
@@ -58,7 +58,7 @@ export function generateDifferences(source, biomeSource) {
 
   const batch = [];
   let offset = 0; // NOTE: INSERT never advances the offset.
-  while (results.length) {
+  while (results.length > 0) {
     const result = results.shift();
     const op = result[0];
     const text = result[1];
@@ -68,8 +68,8 @@ export function generateDifferences(source, biomeSource) {
         batch.push(result);
         break;
       case diff.EQUAL:
-        if (results.length) {
-          if (batch.length) {
+        if (results.length > 0) {
+          if (batch.length > 0) {
             if (LINE_ENDING_RE.test(text)) {
               flush();
               offset += text.length;
@@ -84,7 +84,7 @@ export function generateDifferences(source, biomeSource) {
       default:
         throw new Error(`Unexpected fast-diff operation "${op}"`);
     }
-    if (batch.length && !results.length) {
+    if (batch.length > 0 && results.length === 0) {
       flush();
     }
   }
@@ -94,7 +94,7 @@ export function generateDifferences(source, biomeSource) {
   function flush() {
     let aheadDeleteText = '';
     let aheadInsertText = '';
-    while (batch.length) {
+    while (batch.length > 0) {
       const next = batch.shift();
       const op = next[0];
       const text = next[1];
