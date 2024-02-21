@@ -73,7 +73,6 @@ const eslintPluginBiome = {
 						let content;
 						try {
 							const fromated = biome.formatContent(source, {
-								...fileInfoOptions,
 								filePath,
 								onDiskFilepath,
 							});
