@@ -1,8 +1,10 @@
 import { name, version } from '../package.json';
 import { generateDifferences, showInvisibles } from './helpers';
 import BiomeConfig from '../biome.json';
-import {createBiome} from "./worker"
+import { createBiome } from "./worker"
 const { INSERT, DELETE, REPLACE } = generateDifferences;
+import Biome from './biome';
+
 /**
  * Reports a difference.
  *
@@ -24,6 +26,7 @@ function reportDifference(context, difference) {
 		fix: fixer => fixer.replaceTextRange(range, insertText),
 	});
 }
+let biome
 
 
 const eslintPluginBiome = {
@@ -58,7 +61,7 @@ const eslintPluginBiome = {
 					},
 				],
 			},
-			create(context) {
+			async create(context) {
 				//TODO:
 				const useCustomConfig = !context.options[1] || context.options[1].useCustomConfig !== false;
 				const fileInfoOptions = (context.options[1] && context.options[1].fileInfoOptions) || {};
@@ -66,12 +69,15 @@ const eslintPluginBiome = {
 				const filePath = context.filename ?? context.getFilename();
 				const onDiskFilepath = context.physicalFilename ?? context.getPhysicalFilename();
 				const source = sourceCode.text;
+				if (!biome) {
+					biome = await Biome.create();
+					biome.applyConfiguration({ ...BiomeConfig, ...useCustomConfig });
+
+				}
+
 				return {
 					Program() {
-						 createBiome().then((biome)=>{
-							biome.applyConfiguration({ ...BiomeConfig, ...useCustomConfig });
 							let content;
-							console.log(source);
 							try {
 								const formatted = biome.formatContent(source, {
 									...fileInfoOptions,
@@ -88,7 +94,7 @@ const eslintPluginBiome = {
 								context.report({ message, loc: error });
 								return;
 							}
-	
+
 							if (!content) {
 								return;
 							}
@@ -98,8 +104,6 @@ const eslintPluginBiome = {
 									reportDifference(context, difference);
 								}
 							}
-						})
-				
 					},
 
 				};
