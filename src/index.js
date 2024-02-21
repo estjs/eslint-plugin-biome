@@ -1,9 +1,8 @@
 import { name, version } from '../package.json';
 import { generateDifferences, showInvisibles } from './helpers';
 import BiomeConfig from '../biome.json';
-const { INSERT, DELETE, REPLACE } = generateDifferences;
 import Biome from './biome';
-
+const { INSERT, DELETE, REPLACE } = generateDifferences;
 /**
  * Reports a difference.
  *
@@ -26,8 +25,6 @@ function reportDifference(context, difference) {
 	});
 }
 let biome
-
-
 const eslintPluginBiome = {
 	meta: { name, version },
 	configs: {
@@ -61,9 +58,7 @@ const eslintPluginBiome = {
 				],
 			},
 			async create(context) {
-				//TODO:
-				const useCustomConfig = !context.options[1] || context.options[1].useCustomConfig !== false;
-				const fileInfoOptions = (context.options[1] && context.options[1].fileInfoOptions) || {};
+				const useCustomConfig = context.options?.[0] || {}
 				const sourceCode = context.sourceCode ?? context.getSourceCode();
 				const filePath = context.filename ?? context.getFilename();
 				const onDiskFilepath = context.physicalFilename ?? context.getPhysicalFilename();
@@ -71,15 +66,12 @@ const eslintPluginBiome = {
 				if (!biome) {
 					biome = await Biome.create();
 					biome.applyConfiguration({ ...BiomeConfig, ...useCustomConfig });
-
 				}
-
 				return {
 					Program() {
 							let content;
 							try {
 								const formatted = biome.formatContent(source, {
-									...fileInfoOptions,
 									filePath,
 									onDiskFilepath,
 								});
