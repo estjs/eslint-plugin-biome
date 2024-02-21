@@ -19,7 +19,6 @@
 	"formatter": {
 		"enabled": true,
 		"formatWithErrors": true,
-		"indentStyle": "tab",
 		"lineWidth": 100,
 		"indentWidth": 2
 	},
@@ -47,11 +46,11 @@
 		"rules": {
 			"recommended": true,
 			"complexity": {
-			"useLiteralKeys": "off"
+				"useLiteralKeys": "off"
 			},
 			"suspicious": {
-        "noImplicitAnyLet": "off"
-      },
+				"noImplicitAnyLet": "off"
+			},
 			"style": {
 				"noParameterAssign": "off",
 				"noUselessElse": "off"

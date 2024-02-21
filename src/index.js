@@ -1,8 +1,7 @@
-import BiomeConfig from '../biome.json';
 import { name, version } from '../package.json';
-import Biome from './biome';
 import { generateDifferences, showInvisibles } from './helpers';
-
+import BiomeConfig from '../biome.json';
+import {createBiome} from "./worker"
 const { INSERT, DELETE, REPLACE } = generateDifferences;
 /**
  * Reports a difference.
@@ -14,7 +13,6 @@ const { INSERT, DELETE, REPLACE } = generateDifferences;
 function reportDifference(context, difference) {
 	const { operation, offset, deleteText = '', insertText = '' } = difference;
 	const range = [offset, offset + deleteText.length];
-
 	const [start, end] = range.map(index => context.sourceCode.getLocFromIndex(index));
 	context.report({
 		messageId: operation,
@@ -26,7 +24,7 @@ function reportDifference(context, difference) {
 		fix: fixer => fixer.replaceTextRange(range, insertText),
 	});
 }
-let biome;
+
 
 const eslintPluginBiome = {
 	meta: { name, version },
@@ -69,40 +67,41 @@ const eslintPluginBiome = {
 				const onDiskFilepath = context.physicalFilename ?? context.getPhysicalFilename();
 				const source = sourceCode.text;
 				return {
-					async Program() {
-						if (!biome) {
-							biome = await Biome.create();
-							biome.applyConfiguration(BiomeConfig);
-						}
-						let content;
-						try {
-							const formatted = biome.formatContent(source, {
-								...fileInfoOptions,
-								filePath,
-								onDiskFilepath,
-							});
-							content = formatted.content;
-						} catch (error_) {
-							if (!(error_ instanceof SyntaxError)) {
-								throw error_;
+					Program() {
+						 createBiome().then((biome)=>{
+							biome.applyConfiguration({ ...BiomeConfig, ...useCustomConfig });
+							let content;
+							console.log(source);
+							try {
+								const formatted = biome.formatContent(source, {
+									...fileInfoOptions,
+									filePath,
+									onDiskFilepath,
+								});
+								content = formatted.content;
+							} catch (error_) {
+								if (!(error_ instanceof SyntaxError)) {
+									throw error_;
+								}
+								const message = `Parsing error: ${error_.message}`;
+								const error = /** @type {SyntaxError & {codeFrame: string; loc: SourceLocation}} */ (error_);
+								context.report({ message, loc: error });
+								return;
 							}
-							const message = `Parsing error: ${error_.message}`;
-							const error = /** @type {SyntaxError & {codeFrame: string; loc: SourceLocation}} */ (
-								error_
-							);
-							context.report({ message, loc: error });
-							return;
-						}
-						if (content == null) {
-							return;
-						}
-						if (source !== content) {
-							const differences = generateDifferences(source, content);
-							for (const difference of differences) {
-								reportDifference(context, difference);
+	
+							if (!content) {
+								return;
 							}
-						}
+							if (source !== content) {
+								const differences = generateDifferences(source, content);
+								for (const difference of differences) {
+									reportDifference(context, difference);
+								}
+							}
+						})
+				
 					},
+
 				};
 			},
 		},
