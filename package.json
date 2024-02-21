@@ -1,0 +1,57 @@
+{
+	"name": "eslint-plugin-biome",
+	"type": "module",
+	"version": "0.9.7",
+	"description": "",
+	"license": "MIT",
+	"keywords": [
+		"eslint-plugin",
+		"eslint",
+		"biome",
+		"eslint-plugin-biome"
+	],
+	"homepage": "https://github.com/estjs/eslint-plugin-biome#readme",
+	"bugs": "https://github.com/estjs/eslint-plugin-biome/issues",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/estjs/eslint-plugin-biome.git"
+	},
+	"author": "jiangxd <jiangxd2016@gmail.com>",
+	"funding": "https://github.com/sponsors/estjs",
+	"sideEffects": false,
+	"exports": {
+		".": {
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"main": "dist/index.cjs",
+	"module": "dist/index.mjs",
+	"files": [
+		"dist"
+	],
+	"engines": {
+		"node": ">=14"
+	},
+	"scripts": {
+		"dev": "node ./src/index.js",
+		"build": "unbuild",
+		"lint": "eslint ./src",
+		"test": "vitest",
+		"test:watch": "vitest --watch",
+		"release": "pnpm run build && bumpp package.json  --no-git-checks --commit --push --tag && pnpm publish --access public"
+	},
+	"dependencies": {
+		"@biomejs/wasm-nodejs": "^1.5.2",
+		"fast-diff": "^1.3.0",
+		"synckit": "^0.9.0"
+	},
+	"devDependencies": {
+		"bumpp": "^9.1.0",
+		"eslint": "^8.56.0",
+		"tsx": "^4.7.0",
+		"typescript": "^5.3.3",
+		"unbuild": "^2.0.0",
+		"vitest": "^1.2.1"
+	}
+}
