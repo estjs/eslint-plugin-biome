@@ -1,7 +1,6 @@
 import { name, version } from '../package.json';
 import { generateDifferences, showInvisibles } from './helpers';
 import BiomeConfig from '../biome.json';
-import { createBiome } from "./worker"
 const { INSERT, DELETE, REPLACE } = generateDifferences;
 import Biome from './biome';
 
