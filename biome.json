@@ -1,12 +1,9 @@
 {
   "$schema": "node_modules/@biomejs/biome/configuration_schema.json",
   "vcs": {
-    "enabled": true,
-    "defaultBranch": "main",
-    "clientKind": "git",
-    "useIgnoreFile": true
+    "enabled": false
   },
-  "files": { "ignoreUnknown": false, "ignore": [], "maxSize": 1000000000 },
+  "files": { "ignoreUnknown": false, "ignore": [], "maxSize": 3145728 },
   "formatter": {
     "enabled": true,
     "useEditorconfig": true,
@@ -14,11 +11,13 @@
     "indentStyle": "space",
     "indentWidth": 2,
     "lineEnding": "lf",
-    "lineWidth": 80,
+    "lineWidth": 100,
     "attributePosition": "auto",
     "bracketSpacing": true
   },
-  "organizeImports": { "enabled": true },
+  "organizeImports": {
+    "enabled": false
+  },
   "linter": {
     "enabled": true,
     "rules": {
