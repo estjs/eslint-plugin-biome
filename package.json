@@ -3,7 +3,12 @@
   "version": "0.9.15",
   "description": "",
   "type": "module",
-  "keywords": ["eslint-plugin", "eslint", "biome", "eslint-plugin-biome"],
+  "keywords": [
+    "eslint-plugin",
+    "eslint",
+    "biome",
+    "eslint-plugin-biome"
+  ],
   "license": "MIT",
   "homepage": "https://github.com/estjs/eslint-plugin-biome#readme",
   "bugs": "https://github.com/estjs/eslint-plugin-biome/issues",
@@ -13,7 +18,9 @@
   },
   "author": "jiangxd <jiangxd2016@gmail.com>",
   "funding": "https://github.com/sponsors/estjs",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "exports": {
