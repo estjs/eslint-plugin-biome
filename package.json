@@ -19,6 +19,7 @@
   "author": "jiangxd <jiangxd2016@gmail.com>",
   "funding": "https://github.com/sponsors/estjs",
   "files": [
+    "biome.josn",
     "dist"
   ],
   "main": "dist/index.cjs",
