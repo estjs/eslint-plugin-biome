@@ -1,5 +1,4 @@
 import { name, version } from '../package.json';
-import BiomeConfig from '../biome.json';
 import { generateDifferences, showInvisibles } from './helpers';
 import Biome from './biome';
 const { INSERT, DELETE, REPLACE } = generateDifferences;
@@ -68,7 +67,7 @@ const eslintPluginBiome = {
           async Program() {
             if (!biome) {
               biome = await Biome.create();
-              biome.applyConfiguration({ ...BiomeConfig, ...useCustomConfig });
+              biome.applyConfiguration(useCustomConfig || {});
             }
             let content;
             try {
